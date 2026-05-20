@@ -66,4 +66,4 @@ echo "[INFO] Running MESSI in Docker (${PLATFORM})"
   -e JULIA_DEPOT_PATH=/julia-depot \
   -e MESSI_CONTAINER_JULIA_BIN="${CONTAINER_JULIA_BIN}" \
   "${IMAGE_NAME}" \
-  bash -lc 'set -euo pipefail; cd /workspace/tools/MESSI; "$MESSI_CONTAINER_JULIA_BIN" --project=. -e "using Pkg; try Pkg.rm("CUDAdrv"); catch; end; Pkg.instantiate(); Pkg.build(); Pkg.precompile()"; "$MESSI_CONTAINER_JULIA_BIN" --project=. src/MESSI.jl "$@"' _ "$@"
+  bash -lc 'set -euo pipefail; cd /workspace/tools/MESSI; "$MESSI_CONTAINER_JULIA_BIN" --project=. -e "using Pkg; Pkg.rm(\"CUDAdrv\"; force=true); Pkg.instantiate(); try Pkg.build(\"HDF5\"); catch e; println(\"Warning: HDF5 build failed (expected on non-GPU systems), continuing...\"); end; try Pkg.build(\"PyCall\"); catch e; println(\"Warning: PyCall build failed, continuing...\"); end; Pkg.precompile()" 2>&1 | tee /tmp/julia_build.log; "$MESSI_CONTAINER_JULIA_BIN" --project=. src/MESSI.jl "$@"' _ "$@"
