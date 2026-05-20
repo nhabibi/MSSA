@@ -1,0 +1,16 @@
+["0 - 0.3.35"]
+PyCall = "1.92.0-1"
+
+["0.3.36 - 0"]
+AxisKeysExtra = "0.1.22 - 0.1"
+Interpolations = "0.15"
+RectiGrids = "0.1"
+
+["0.3.36 - 0.4.13"]
+PyCall = "1.92.0 - 1"
+
+["0.4 - 0"]
+SkyCoords = "1.5.3 - 1"
+
+["0.4.14 - 0"]
+PythonCall = "0.9"

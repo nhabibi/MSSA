@@ -1,0 +1,22 @@
+[0]
+ClimaComms = "0.6"
+RRTMGP = "0.21"
+
+["0 - 0.3.1"]
+CloudMicrophysics = "0.29"
+
+["0.3.2 - 0"]
+Reactant = "0.2.203 - 0.2"
+SpecialFunctions = "2"
+
+["0.3.2 - 0.3"]
+CloudMicrophysics = "0.29 - 0.30"
+
+["0.4 - 0.4.1"]
+CloudMicrophysics = "0.31.4 - 0.31"
+
+["0.4.2 - 0.4"]
+CloudMicrophysics = "0.31.4 - 0.32"
+
+["0.5 - 0"]
+CloudMicrophysics = "0.31.4 - 0.35"

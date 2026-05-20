@@ -1,0 +1,19 @@
+# Documentation: http://docs.travis-ci.com/user/languages/julia/
+language: julia
+os:
+  - linux
+  - osx
+julia:
+  - 0.6
+  - 0.7
+  - nightly
+matrix:
+    allow_failures:
+        - julia: nightly
+notifications:
+  email: false
+after_success:
+  - julia -e 'Pkg.add("Documenter", v"0.6.0")'
+  - julia -e 'cd(Pkg.dir("FastaIO")); include(joinpath("docs", "make.jl"))'
+  - julia -e 'Pkg.add("Coverage", v"0.3")'
+  - julia -e 'cd(Pkg.dir("FastaIO")); include(joinpath("docs", "coverage.jl"))'

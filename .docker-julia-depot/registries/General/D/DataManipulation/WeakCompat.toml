@@ -1,0 +1,11 @@
+[0]
+IntervalSets = "0.7"
+
+["0 - 0.1.13"]
+Dictionaries = "0.3.24-0.3"
+
+["0 - 0.1.15"]
+StructArrays = "0.6.12-0.6"
+
+["0.1.22 - 0"]
+DictArrays = "0.1"

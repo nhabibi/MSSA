@@ -1,0 +1,47 @@
+name: Generate and Deploy Redirects
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * *'
+  push:
+    branches:
+      - master
+    paths:
+      - '**/Package.toml' # avoids redeploys on version or compat changes
+      - '.github/workflows/redirects_page.yml'
+      - '.ci/generate_redirects.jl'
+
+
+jobs:
+  build-and-deploy:
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+            persist-credentials: false
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@fa02766e078afaaf09b14210362cee14137e6a32 # v3.0.2
+        with:
+          version: '1'
+
+      - name: Run the "generate_redirects.jl" Julia script
+        run: julia .ci/generate_redirects.jl
+
+      - name: Upload static files as artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: webroot/
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

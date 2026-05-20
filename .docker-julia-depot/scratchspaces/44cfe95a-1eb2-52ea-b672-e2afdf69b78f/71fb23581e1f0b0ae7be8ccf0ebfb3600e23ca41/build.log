@@ -1,0 +1,12 @@
+ERROR: LoadError: LoadError: UndefVarError: Libdl not defined
+Stacktrace:
+ [1] include(fname::String)
+   @ Base.MainInclude ./client.jl:444
+ [2] top-level scope
+   @ /julia-depot/packages/Blosc/lzFr0/deps/build.jl:2
+ [3] include(fname::String)
+   @ Base.MainInclude ./client.jl:444
+ [4] top-level scope
+   @ none:5
+in expression starting at /julia-depot/packages/Blosc/lzFr0/deps/compile.jl:3
+in expression starting at /julia-depot/packages/Blosc/lzFr0/deps/build.jl:2
