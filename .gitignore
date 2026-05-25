@@ -5,6 +5,9 @@
 *.ji
 MESSI/.docker-julia-depot/compiled/
 
+# Notebooks
+*.ipynb
+
 # Logs
 output.log
 phases/*/logs/
