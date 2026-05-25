@@ -94,10 +94,10 @@ Base.@propagate_inbounds function Base.iterate(s::WeakRefString, i::Int=firstind
     b = codeunit(s, i)
     u = UInt32(b) << 24
     Base.between(b, 0x80, 0xf7) || return reinterpret(Char, u), i+1
-    return Base.next_continued(s, i, u)
+    return _wrs_next_continued(s, i, u)
 end
 
-function Base.next_continued(s::WeakRefString, i::Int, u::UInt32)
+function _wrs_next_continued(s::WeakRefString, i::Int, u::UInt32)
     u < 0xc0000000 && (i += 1; @goto ret)
     n = ncodeunits(s)
     # first continuation byte

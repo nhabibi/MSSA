@@ -10,8 +10,10 @@ CONTAINER_JULIA_BIN="${MESSI_CONTAINER_JULIA_BIN:-/usr/local/julia/bin/julia}"
 # TODO: Fix/modernize MESSI dependencies for later.
 
 find_docker() {
-  if command -v docker >/dev/null 2>&1; then
-    command -v docker
+  local found
+  found="$(command -v docker 2>/dev/null)" || true
+  if [[ -n "$found" && -x "$found" ]]; then
+    echo "$found"
     return
   fi
 
@@ -40,7 +42,7 @@ fi
 
 build_image() {
   echo "[INFO] Building Docker image ${IMAGE_NAME}"
-  "${DOCKER_BIN}" build --platform "${PLATFORM}" -t "${IMAGE_NAME}" -f "$WORKSPACE_DIR/docker/messi/Dockerfile" "$WORKSPACE_DIR"
+  "${DOCKER_BIN}" build --pull=false --platform "${PLATFORM}" -t "${IMAGE_NAME}" -f "$WORKSPACE_DIR/docker/messi/Dockerfile" "$WORKSPACE_DIR"
 }
 
 if [[ "${1:-}" == "--build" ]]; then
@@ -54,16 +56,22 @@ fi
 
 mkdir -p "${DEPOT_DIR}"
 
+# Mount MSSA root at its own path so absolute paths to input/output files resolve inside the container
+MSSA_ROOT="$(dirname "$WORKSPACE_DIR")"
+
 if [[ "$#" -eq 0 ]]; then
   set -- --help
 fi
 
 echo "[INFO] Running MESSI in Docker (${PLATFORM})"
-"${DOCKER_BIN}" run --rm -it \
+TTY_FLAGS=""
+[[ -t 0 && -t 1 ]] && TTY_FLAGS="-it"
+"${DOCKER_BIN}" run --rm ${TTY_FLAGS} \
   --platform "${PLATFORM}" \
   -v "$WORKSPACE_DIR:/workspace" \
+  -v "$MSSA_ROOT:$MSSA_ROOT" \
   -v "$DEPOT_DIR:/julia-depot" \
   -e JULIA_DEPOT_PATH=/julia-depot \
   -e MESSI_CONTAINER_JULIA_BIN="${CONTAINER_JULIA_BIN}" \
   "${IMAGE_NAME}" \
-  bash -lc 'set -euo pipefail; cd /workspace/tools/MESSI; "$MESSI_CONTAINER_JULIA_BIN" --project=. -e "using Pkg; Pkg.rm(\"CUDAdrv\"; force=true); Pkg.instantiate(); try Pkg.build(\"HDF5\"); catch e; println(\"Warning: HDF5 build failed (expected on non-GPU systems), continuing...\"); end; try Pkg.build(\"PyCall\"); catch e; println(\"Warning: PyCall build failed, continuing...\"); end; Pkg.precompile()" 2>&1 | tee /tmp/julia_build.log; "$MESSI_CONTAINER_JULIA_BIN" --project=. src/MESSI.jl "$@"' _ "$@"
+  bash -lc 'set -euo pipefail; cd /workspace/tools/MESSI; "$MESSI_CONTAINER_JULIA_BIN" --project=. -e "using Pkg; try Pkg.rm(\"CUDAdrv\"); catch; end; Pkg.instantiate(); try Pkg.build(\"HDF5\"); catch e; println(\"Warning: HDF5 build failed (expected on non-GPU systems), continuing...\"); end; try Pkg.build(\"PyCall\"); catch e; println(\"Warning: PyCall build failed, continuing...\"); end; Pkg.precompile()" 2>&1 | tee /tmp/julia_build.log; "$MESSI_CONTAINER_JULIA_BIN" --project=. src/MESSI.jl "$@"' _ "$@"

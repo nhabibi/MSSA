@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
+
+# Remove stale MAFFT_BINARIES that breaks mafft version detection
+os.environ.pop("MAFFT_BINARIES", None)
 
 def run_cmd(cmd, stdout_file=None):
     print("[CMD]", " ".join(str(c) for c in cmd))
@@ -40,8 +44,8 @@ def main():
     docker_runner = base_dir.parent.parent / "MESSI" / "run_messi_docker.sh"
     B_messi = results_dir / "B_messi.csv"
     O_messi = results_dir / "O_messi.csv"
-    run_cmd([str(docker_runner), "--alignment", str(B_tar_aligned), "--output", str(B_messi)])
-    run_cmd([str(docker_runner), "--alignment", str(O_tar_aligned), "--output", str(O_messi)])
+    run_cmd([str(docker_runner), "--alignment", str(B_tar_aligned), "--output", str(B_messi), "--cpuonly", "--full"])
+    run_cmd([str(docker_runner), "--alignment", str(O_tar_aligned), "--output", str(O_messi), "--cpuonly", "--full"])
     print("✓ Step 3: MESSI completed")
 
     # --- Step 4: Interpret (Placeholder for future implementation) ---

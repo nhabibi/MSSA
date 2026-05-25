@@ -14,7 +14,13 @@ RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/source
         gfortran \
         git \
         make \
-    && rm -rf /var/lib/apt/lists/*
+        libhdf5-dev \
+        libz-dev \
+        python3 \
+        python3-dev \
+        python3-pip \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --no-cache-dir matplotlib
 
 ENV JULIA_DEPOT_PATH=/julia-depot
 RUN mkdir -p /julia-depot

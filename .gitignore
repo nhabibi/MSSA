@@ -1,0 +1,10 @@
+# macOS metadata
+.DS_Store
+
+# Julia precompiled cache files
+*.ji
+MESSI/.docker-julia-depot/compiled/
+
+# Logs
+output.log
+phases/*/logs/
